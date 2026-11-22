@@ -11,8 +11,43 @@
 
 ---
 
+## For reviewers
+
+**Run it** (needs Docker and an [OpenWeather API key](#getting-an-openweather-api-key)):
+
+```bash
+git clone https://github.com/vdella/weather-ingest-api.git && cd weather-ingest-api
+cp .env.example .env                  # set OPENWEATHER_API_KEY
+docker compose up --build -d --wait   # API + PostgreSQL, migrations applied
+./scripts/demo.sh                     # fetch -> store -> query, end to end
+```
+
+Then open Swagger UI at <http://localhost:8000/docs>, or import [the Postman collection](docs/postman_collection.json).
+
+![Swagger UI of the Weather Ingest API](docs/images/swagger-ui.png)
+
+**Where each requirement is met**
+
+| Requirement | Where |
+|---|---|
+| Data extraction via an API: `GET`, dynamic URL parameters, API-key auth | [`app/clients/openweather.py`](app/clients/openweather.py): `q`, `units` and `lang` per request, key from the environment ([ADR-0004](docs/adr/0004-openweather-client.md)) |
+| Storage in a relational database (one table) | PostgreSQL table `weather_readings` with typed columns, constraints, indexes and an idempotent upsert: [model](app/models/weather_reading.py), [migration](migrations/versions/0001_create_weather_readings.py), [repository](app/repositories/weather_readings.py) ([ADR-0006](docs/adr/0006-weather-readings-schema.md)) |
+| Remote access: a RESTful API, documented | FastAPI under `/api/v1` with Swagger UI, ReDoc and a Postman collection: [routes](app/api/routes/weather.py) ([ADR-0007](docs/adr/0007-rest-api-fastapi.md)) |
+| Docker environment with the API and the database | Multi-stage [`Dockerfile`](Dockerfile) and [`docker-compose.yml`](docker-compose.yml), checked by a CI smoke test ([ADR-0008](docs/adr/0008-docker-containerization.md)) |
+| Git organisation and a README | Small Conventional Commits in [one PR per feature](https://github.com/vdella/weather-ingest-api/pulls?q=is%3Apr+is%3Amerged), [CI and releases](https://github.com/vdella/weather-ingest-api/actions), [ADRs](docs/adr/README.md) for every decision |
+
+**Worth a look**
+
+- **The PR history**: [#1 to #5](https://github.com/vdella/weather-ingest-api/pulls?q=is%3Apr+is%3Amerged) build the project in order (bootstrap, extraction, storage, REST API, Docker); later PRs fix what real use uncovered, each with a test plan.
+- **The [ADRs](docs/adr/README.md)**: ten short records of what was decided, what was rejected and why.
+- **The tests**: unit tests run offline with OpenWeather mocked; integration tests run the real Alembic migration against PostgreSQL in CI, which also checks that the migration matches the models.
+- **[Releases](https://github.com/vdella/weather-ingest-api/releases)**: versioned automatically from the commit history, with packages attached and a Docker image on GHCR.
+
+---
+
 ## Table of Contents
 
+- [For reviewers](#for-reviewers)
 - [Overview](#overview)
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
@@ -88,9 +123,12 @@ weather-ingest-api/
 │   ├── core/             # Settings, logging, DB session
 │   └── main.py           # FastAPI entrypoint
 ├── migrations/           # Alembic migrations
+├── scripts/
+│   └── demo.sh           # end-to-end walkthrough of the running API
 ├── tests/
 ├── docs/
 │   ├── adr/              # Architecture Decision Records
+│   ├── images/           # README screenshots
 │   └── postman_collection.json
 ├── .github/workflows/    # CI (tests) and release automation
 ├── docker/
