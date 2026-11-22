@@ -5,7 +5,6 @@
 
 ### Bug Fixes
 
-* **release:** tag releases as vX.Y.Z and tag images from release outputs ([4f27cc8](https://github.com/vdella/weather-ingest-api/commit/4f27cc8657e0e10e44f7402494125389b1cd7480))
 * **release:** tag releases as vX.Y.Z and tag images from release outputs ([8ba5ca2](https://github.com/vdella/weather-ingest-api/commit/8ba5ca2d145b3c2d3c1fc6686a4e1140291e17ae))
 
 ## 0.1.0 (2026-11-22)
@@ -17,7 +16,6 @@
 * **api:** add REST response schemas ([21ee59f](https://github.com/vdella/weather-ingest-api/commit/21ee59f6eb91716e409bc0d073b854ee591114ec))
 * **api:** expose weather readings through a versioned REST API ([5618498](https://github.com/vdella/weather-ingest-api/commit/5618498b8d718209970bc2346a193342e91fa1d7))
 * **config:** load typed settings from the environment ([553617b](https://github.com/vdella/weather-ingest-api/commit/553617bf2c98be919f6d4cc21f24bcd0c18028e9))
-* containerize the API and PostgreSQL with Docker Compose ([fdb0c84](https://github.com/vdella/weather-ingest-api/commit/fdb0c8469326b1eef2b66b7229fae8b19c2ed53b))
 * **extraction:** add OpenWeather current weather client ([8e2c257](https://github.com/vdella/weather-ingest-api/commit/8e2c257647309938388b3df6df8aedca991b5d38))
 * **extraction:** add weather-ingest CLI to fetch a city on demand ([d998130](https://github.com/vdella/weather-ingest-api/commit/d998130105da1533d7a4098d40bfd858c8af1b0e))
 * **extraction:** model the OpenWeather current weather payload ([4df0650](https://github.com/vdella/weather-ingest-api/commit/4df06503cf6b61623e5d4690c6abda5329b69f08))
@@ -32,7 +30,6 @@
 
 ### Bug Fixes
 
-* **release:** bump the project version in uv.lock with each release ([b5d429e](https://github.com/vdella/weather-ingest-api/commit/b5d429e89ec3822052ff42a3db2d6e141443548b))
 * **release:** bump the project version in uv.lock with each release ([50b7a76](https://github.com/vdella/weather-ingest-api/commit/50b7a76ee9f62ce4f01318eba251531db142ef92))
 
 
