@@ -240,30 +240,42 @@ A ready-to-import collection is available at [`docs/postman_collection.json`](do
 
 ## Database Schema
 
-Table: **`weather_readings`**
+Table: **`weather_readings`** (created by the Alembic migration in [`migrations/versions/`](migrations/versions/))
 
 | Column | Type | Notes |
 |---|---|---|
-| `id` | `BIGSERIAL` | Primary key |
+| `id` | `BIGINT` identity | Primary key |
 | `city_id` | `INTEGER` | OpenWeather city id |
-| `city_name` | `TEXT` | |
-| `country_code` | `CHAR(2)` | ISO 3166-1 alpha-2 |
+| `city_name` | `TEXT` | As returned by OpenWeather, e.g. `Florianópolis` |
+| `city_search_name` | `TEXT` | Lower-cased, accent-free name used for lookups, e.g. `florianopolis` |
+| `country_code` | `VARCHAR(2)` | ISO 3166-1 alpha-2 |
 | `latitude` / `longitude` | `NUMERIC(8,5)` | |
 | `observed_at` | `TIMESTAMPTZ` | When OpenWeather measured the data (`dt`) |
-| `fetched_at` | `TIMESTAMPTZ` | When this service collected it (default `now()`) |
-| `units` | `TEXT` | Unit system used for the values below |
-| `temperature` / `feels_like` / `temp_min` / `temp_max` | `NUMERIC(5,2)` | |
+| `fetched_at` | `TIMESTAMPTZ` | When this service last collected it (default `now()`) |
+| `units` | `TEXT` | `standard`, `metric` or `imperial`: the unit system of the values below |
+| `lang` | `TEXT` | Language of `weather_description` |
+| `temperature` / `feels_like` / `temp_min` / `temp_max` | `NUMERIC(6,2)` | |
 | `humidity` | `SMALLINT` | % |
 | `pressure` | `SMALLINT` | hPa |
-| `wind_speed` | `NUMERIC(5,2)` | |
-| `wind_deg` | `SMALLINT` | Degrees |
+| `wind_speed` | `NUMERIC(6,2)` | |
+| `wind_deg` | `SMALLINT` | Degrees (nullable) |
 | `cloudiness` | `SMALLINT` | % |
 | `weather_main` / `weather_description` | `TEXT` | e.g. `Clouds` / `nublado` |
 | `raw_payload` | `JSONB` | Original response, kept for auditing and reprocessing |
 
 **Constraints and indexes**
-- `UNIQUE (city_id, observed_at)`: makes ingestion idempotent (an upsert on conflict).
-- Index on `(lower(city_name), observed_at DESC)`: supports the "filter by city, newest first" queries.
+- `UNIQUE (city_id, observed_at, units)`: makes ingestion idempotent (`INSERT ... ON CONFLICT DO UPDATE`).
+- Check constraints on `units` and on value ranges (humidity, cloudiness, wind direction, coordinates).
+- Index on `(city_search_name, observed_at)`: "readings for a city, newest first" and "latest for a city".
+- Index on `(observed_at)`: time-range queries.
+
+See [ADR-0006](docs/adr/0006-weather-readings-schema.md) for the reasoning.
+
+To fetch and store a city without the API:
+
+```bash
+uv run weather-ingest ingest "Florianopolis,BR"
+```
 
 ## Testing
 
@@ -275,7 +287,11 @@ uv run mypy                 # type-check
 ```
 
 The OpenWeather client is mocked in the tests, so **no API key is needed** to run them.
-Tests that need a real database run only when `TEST_DATABASE_URL` points to a PostgreSQL instance (CI provides one); otherwise they are skipped.
+Tests that need a real database run only when `TEST_DATABASE_URL` points to a PostgreSQL instance (CI provides one); otherwise they are skipped. **The database is dropped and recreated by the tests, so never point it at real data.**
+
+```bash
+TEST_DATABASE_URL=postgresql+psycopg://weather:weather@localhost:5432/weather_test uv run pytest
+```
 
 ## Design Decisions
 
