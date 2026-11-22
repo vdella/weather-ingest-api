@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1](https://github.com/vdella/weather-ingest-api/compare/v0.1.0...v0.1.1) (2026-11-22)
+
+
+### Bug Fixes
+
+* **release:** tag releases as vX.Y.Z and tag images from release outputs ([4f27cc8](https://github.com/vdella/weather-ingest-api/commit/4f27cc8657e0e10e44f7402494125389b1cd7480))
+* **release:** tag releases as vX.Y.Z and tag images from release outputs ([8ba5ca2](https://github.com/vdella/weather-ingest-api/commit/8ba5ca2d145b3c2d3c1fc6686a4e1140291e17ae))
+
 ## 0.1.0 (2026-11-22)
 
 
