@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.4](https://github.com/vdella/weather-ingest-api/compare/v0.1.3...v0.1.4) (2026-11-22)
+
+
+### Documentation
+
+* add a demo script that walks through the running API ([98a74ab](https://github.com/vdella/weather-ingest-api/commit/98a74abdbbfc53aedf4daf80391f6e8d5df48629))
+* add a reviewer guide to the top of the README ([4650661](https://github.com/vdella/weather-ingest-api/commit/4650661c148a76c43162e25627dff78edee9b758))
+* add a summary in Portuguese to the README ([6620ad7](https://github.com/vdella/weather-ingest-api/commit/6620ad7358ccf3d951914fc46a1fe343147222fa))
+
 ## [0.1.3](https://github.com/vdella/weather-ingest-api/compare/v0.1.2...v0.1.3) (2026-11-22)
 
 
