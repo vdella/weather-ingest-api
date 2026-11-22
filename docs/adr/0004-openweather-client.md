@@ -34,7 +34,7 @@ The extracted data will be stored (feature 2) and served (feature 3), so the ext
 - **One Call API 3.0**: richer data (forecasts, alerts) but requires a separate subscription, even for the free quota, and needs coordinates instead of a city name.
 - **requests**: equally capable for this use case, but httpx offers first-class timeouts, a transport layer that is trivial to mock with `respx`, and an async API if we ever need concurrent ingestion.
 - **Async client from the start**: the ingestion is one request per API call; a sync client keeps the code simpler and works well inside FastAPI's thread pool. Switching later only touches this module.
-- **Retries with backoff**: useful for 429/5xx, but they hide failures in a demo and complicate tests. Listed as future work.
+- **Retries with backoff**: useful for 429/5xx, but they hide failures in a demo and complicate tests. Left as future work.
 
 ## Consequences
 
