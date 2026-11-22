@@ -12,6 +12,9 @@ dependencies = [
     "pydantic-settings>=2.6",
 ]
 
+[project.scripts]
+weather-ingest = "app.cli:main"
+
 [dependency-groups]
 dev = [
     "mypy>=1.13",
