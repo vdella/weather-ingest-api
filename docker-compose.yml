@@ -1,0 +1,40 @@
+# API + PostgreSQL. Usage:
+#   cp .env.example .env   # set OPENWEATHER_API_KEY and POSTGRES_PASSWORD
+#   docker compose up --build
+name: weather-ingest
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-weather}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-weather}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      # Published on localhost only, for psql or running the test-suite from the host.
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    image: weather-ingest-api:local
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Inside the Compose network the database host is the service name `db`.
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-weather}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-weather}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${API_PORT:-8000}:8000"
+
+volumes:
+  pgdata:
