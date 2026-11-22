@@ -175,15 +175,15 @@ uv run uvicorn app.main:app --reload
 
 ## Using the API
 
-All endpoints are versioned under `/api/v1`.
+All endpoints except `/health` are versioned under `/api/v1`. The interactive Swagger UI at <http://localhost:8000/docs> lets you try every call from the browser.
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/api/v1/weather/fetch` | Fetch current weather for a city from OpenWeather and store it |
+| `POST` | `/api/v1/weather/fetch` | Fetch current weather for a city from OpenWeather and store it (`201`, idempotent) |
 | `GET` | `/api/v1/weather` | List stored readings (filters and pagination) |
 | `GET` | `/api/v1/weather/{id}` | Get a single reading by id |
 | `GET` | `/api/v1/weather/latest` | Get the most recent reading for a city |
-| `GET` | `/health` | Liveness check (API and database) |
+| `GET` | `/health` | Liveness check (API and database); `503` if the database is unreachable |
 
 ### Query parameters
 
@@ -217,6 +217,36 @@ Get the latest reading:
 curl "http://localhost:8000/api/v1/weather/latest?city=Florianopolis"
 ```
 
+Example response (decimals are strings to keep their exact value):
+
+```json
+{
+  "id": 1,
+  "city_id": 3463237,
+  "city_name": "Florianópolis",
+  "country_code": "BR",
+  "latitude": "-27.59670",
+  "longitude": "-48.54920",
+  "observed_at": "2026-11-22T12:00:00Z",
+  "fetched_at": "2026-11-22T12:05:00Z",
+  "units": "metric",
+  "lang": "pt_br",
+  "temperature": "24.31",
+  "feels_like": "24.72",
+  "temp_min": "23.92",
+  "temp_max": "25.01",
+  "humidity": 74,
+  "pressure": 1014,
+  "wind_speed": "4.63",
+  "wind_deg": 70,
+  "cloudiness": 75,
+  "weather_main": "Clouds",
+  "weather_description": "nublado"
+}
+```
+
+City filters ignore case and accents (`florianopolis` matches `Florianópolis`) and accept an optional country code (`Florianopolis,BR`).
+
 ### Error responses
 
 | Status | When |
@@ -224,7 +254,9 @@ curl "http://localhost:8000/api/v1/weather/latest?city=Florianopolis"
 | `404 Not Found` | The city does not exist on OpenWeather, or no stored reading matches |
 | `422 Unprocessable Entity` | Invalid query parameters |
 | `502 Bad Gateway` | OpenWeather returned an unexpected error or invalid key |
-| `503 Service Unavailable` | OpenWeather rate limit hit or request timed out |
+| `503 Service Unavailable` | OpenWeather rate limit hit, timed out or returned a 5xx |
+
+Error bodies always have the shape `{"detail": "..."}`. See [ADR-0007](docs/adr/0007-rest-api-fastapi.md) for the API design.
 
 ### Command line
 
@@ -236,7 +268,7 @@ uv run weather-ingest fetch "Florianopolis,BR" --units metric --lang pt_br
 
 ### Postman
 
-A ready-to-import collection is available at [`docs/postman_collection.json`](docs/postman_collection.json).
+A ready-to-import collection is available at [`docs/postman_collection.json`](docs/postman_collection.json). Import it, check the `baseUrl` collection variable (default `http://localhost:8000`) and run **Fetch and store current weather** first; it saves the new id for **Get reading by id**.
 
 ## Database Schema
 
