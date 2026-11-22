@@ -16,5 +16,6 @@ Each record explains the context, the decision, the alternatives that were consi
 | [0005](0005-postgresql-sqlalchemy-alembic.md) | PostgreSQL with SQLAlchemy 2.0, psycopg 3 and Alembic | Accepted |
 | [0006](0006-weather-readings-schema.md) | One `weather_readings` table with a natural key and idempotent upserts | Accepted |
 | [0007](0007-rest-api-fastapi.md) | REST API with FastAPI, OpenAPI/Swagger and a Postman collection | Accepted |
-| [0008](0008-docker-containerization.md) | Multi-stage Docker image and a Docker Compose stack | Accepted |
+| [0008](0008-docker-containerization.md) | Multi-stage Docker image and a Docker Compose stack | Accepted, amended by 0010 |
 | [0009](0009-rebase-only-merges.md) | Merge pull requests by rebase only | Accepted |
+| [0010](0010-database-port-not-published.md) | Do not publish the database port by default | Accepted |
