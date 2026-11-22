@@ -1,0 +1,7 @@
+Alembic migrations for weather-ingest-api.
+
+    uv run alembic upgrade head                           # apply all migrations
+    uv run alembic revision --autogenerate -m "message"   # draft a new one from the models
+    uv run alembic check                                  # fail if models and migrations differ
+
+The database URL comes from DATABASE_URL (see app/core/config.py).
