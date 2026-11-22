@@ -226,6 +226,14 @@ curl "http://localhost:8000/api/v1/weather/latest?city=Florianopolis"
 | `502 Bad Gateway` | OpenWeather returned an unexpected error or invalid key |
 | `503 Service Unavailable` | OpenWeather rate limit hit or request timed out |
 
+### Command line
+
+The `weather-ingest` CLI calls OpenWeather directly, which is handy to check that your API key works:
+
+```bash
+uv run weather-ingest fetch "Florianopolis,BR" --units metric --lang pt_br
+```
+
 ### Postman
 
 A ready-to-import collection is available at [`docs/postman_collection.json`](docs/postman_collection.json).
