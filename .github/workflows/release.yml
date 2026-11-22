@@ -26,6 +26,11 @@ jobs:
       - id: release
         uses: googleapis/release-please-action@v4
         with:
+          # PRs opened with the default GITHUB_TOKEN do not trigger other workflows, so the
+          # release PR would get no CI checks. A fine-grained PAT (or GitHub App token) stored
+          # as RELEASE_PLEASE_TOKEN makes its checks run; without it we fall back to the
+          # default token and the checks must be started by hand.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 

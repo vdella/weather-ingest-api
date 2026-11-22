@@ -41,4 +41,5 @@ We also want versioning and a changelog without anyone hand-editing version numb
 
 - The repository setting *Settings → Actions → General → Allow GitHub Actions to create and approve pull requests* must be enabled for release-please to open its PR.
 - Branch protection on `main` should require the `Lint and type-check` and `Tests` checks.
+- Pull requests opened with the default `GITHUB_TOKEN` do not trigger other workflows, so release-please's PR would never get those required checks. The release workflow therefore uses a `RELEASE_PLEASE_TOKEN` secret when it exists: a fine-grained personal access token (or GitHub App token) scoped to this repository with *Contents* and *Pull requests* read/write. Without the secret it falls back to `GITHUB_TOKEN`, and the release PR's checks have to be started by hand (for example by closing and reopening it).
 - Commit message discipline matters: a non-conventional commit on `main` is ignored by the changelog.
