@@ -8,7 +8,7 @@ from fastapi import FastAPI
 
 from app import __version__
 from app.api.errors import register_error_handlers
-from app.api.routes import weather
+from app.api.routes import health, weather
 from app.clients.openweather import OpenWeatherClient
 from app.core.config import get_settings
 
@@ -40,6 +40,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
     register_error_handlers(app)
+    app.include_router(health.router)
     app.include_router(weather.router, prefix=API_PREFIX)
     return app
 

@@ -41,3 +41,5 @@ def test_fetch_then_query(client: TestClient, openweather_payload: dict[str, Any
 
     by_id = client.get(f"/api/v1/weather/{created.json()['id']}")
     assert by_id.json()["city_name"] == "Florianópolis"
+
+    assert client.get("/health").json()["database"] == "ok"
