@@ -1,0 +1,228 @@
+{
+  "info": {
+    "name": "Weather Ingest API",
+    "description": "Requests for the weather-ingest-api REST API. Set `baseUrl` (default http://localhost:8000) and run **Fetch and store** first.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "city",
+      "value": "Florianopolis,BR"
+    },
+    {
+      "key": "readingId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "description": "Liveness and database connectivity."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Weather",
+      "item": [
+        {
+          "name": "Fetch and store current weather",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/weather/fetch?city={{city}}&units=metric&lang=pt_br",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "weather",
+                "fetch"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "{{city}}",
+                  "description": "City, optionally with ',CC'"
+                },
+                {
+                  "key": "units",
+                  "value": "metric",
+                  "description": "standard | metric | imperial"
+                },
+                {
+                  "key": "lang",
+                  "value": "pt_br",
+                  "description": "Language of the description"
+                }
+              ]
+            },
+            "description": "Calls OpenWeather and stores the observation. Saves the new id in `readingId`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('readingId', pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List readings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/weather?city=Florianopolis&from=2026-11-01T00:00:00Z&to=2026-12-01T00:00:00Z&limit=20&offset=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "weather"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "Florianopolis"
+                },
+                {
+                  "key": "from",
+                  "value": "2026-11-01T00:00:00Z"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-12-01T00:00:00Z"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Newest first. All filters are optional."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Latest reading for a city",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/weather/latest?city={{city}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "weather",
+                "latest"
+              ],
+              "query": [
+                {
+                  "key": "city",
+                  "value": "{{city}}"
+                }
+              ]
+            },
+            "description": "Most recent stored reading for the city."
+          }
+        },
+        {
+          "name": "Get reading by id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/weather/{{readingId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "weather",
+                "{{readingId}}"
+              ]
+            },
+            "description": "One stored reading."
+          }
+        }
+      ]
+    }
+  ]
+}
