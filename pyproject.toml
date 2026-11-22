@@ -1,6 +1,6 @@
 [project]
 name = "weather-ingest-api"
-version = "0.1.2"
+version = "0.1.3"
 description = "Pulls current weather from OpenWeather, stores it in PostgreSQL and serves it through a REST API."
 readme = "README.md"
 license = "MIT"

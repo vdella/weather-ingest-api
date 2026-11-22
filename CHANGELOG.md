@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.3](https://github.com/vdella/weather-ingest-api/compare/v0.1.2...v0.1.3) (2026-11-22)
+
+
+### Bug Fixes
+
+* **docker:** stop publishing the database port by default ([8fd7e91](https://github.com/vdella/weather-ingest-api/commit/8fd7e91f67db236707ea7fc1f7775a20ef2f5bc3))
+
+
+### Documentation
+
+* **adr:** do not publish the database port by default (ADR-0010) ([a1236c3](https://github.com/vdella/weather-ingest-api/commit/a1236c33f823634efa3dd45dafb17193d97596da))
+* **adr:** merge pull requests by rebase only (ADR-0009) ([e614677](https://github.com/vdella/weather-ingest-api/commit/e614677a867529e0a0c19d0f4af1c1e792d9779f))
+* update the README for the opt-in database port ([05f81fe](https://github.com/vdella/weather-ingest-api/commit/05f81fe39cd438ca170e1bfb7eec3b5e9e8b5ed4))
+
 ## [0.1.2](https://github.com/vdella/weather-ingest-api/compare/v0.1.1...v0.1.2) (2026-11-22)
 
 
