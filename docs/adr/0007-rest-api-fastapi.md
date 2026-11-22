@@ -34,7 +34,7 @@ The API also needs a way to trigger ingestion, because the assessment does not p
 - **Flask + flask-smorest / Django REST Framework**: both mature, but they need extra libraries or more boilerplate to get validated, typed, self-documented endpoints. DRF also brings Django's ORM, which overlaps with SQLAlchemy.
 - **`GET /weather/{city}` that fetches on demand**: convenient but a `GET` with side effects, and it mixes reading stored data with calling OpenWeather.
 - **Cursor-based pagination**: better for very large tables, but limit/offset is simpler to use from Swagger and is enough here.
-- **Authentication on the API**: out of scope for the assessment; listed as future work. The OpenWeather key never leaves the server.
+- **Authentication on the API**: out of scope for the assessment; left as future work. The OpenWeather key never leaves the server.
 - **Async endpoints with asyncpg**: more throughput under heavy concurrency, but it would complicate the stack for no visible benefit here.
 
 ## Consequences
