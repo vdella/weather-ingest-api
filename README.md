@@ -94,6 +94,8 @@ weather-ingest-api/
 │   ├── adr/              # Architecture Decision Records
 │   └── postman_collection.json
 ├── .github/workflows/    # CI (tests) and release automation
+├── docker/
+│   └── entrypoint.sh     # migrate, then start the API (or run any command)
 ├── Dockerfile
 ├── docker-compose.yml
 ├── .env.example
@@ -141,9 +143,9 @@ Then fill in your values:
 ## Running with Docker (recommended)
 
 ```bash
-git clone https://github.com/<your-user>/weather-ingest-api.git
+git clone https://github.com/vdella/weather-ingest-api.git
 cd weather-ingest-api
-cp .env.example .env        # then set OPENWEATHER_API_KEY
+cp .env.example .env        # then set OPENWEATHER_API_KEY and POSTGRES_PASSWORD
 docker compose up --build
 ```
 
@@ -151,11 +153,23 @@ What happens:
 - PostgreSQL starts, and its healthcheck reports when it is ready.
 - The API container waits for the database to be **healthy**, applies the migrations, and starts on port `8000`.
 - Data is persisted in a named Docker volume, so it survives restarts.
+- The API runs as a non-root user and has its own healthcheck on `/health`.
 
 Once it is up:
 - Swagger UI: <http://localhost:8000/docs>
 - ReDoc: <http://localhost:8000/redoc>
 - Health check: <http://localhost:8000/health>
+
+Useful commands:
+
+```bash
+docker compose run --rm api weather-ingest ingest "Florianopolis,BR"   # ingest from the CLI
+docker compose run --rm api migrate                                    # only apply migrations
+docker compose exec db psql -U weather -d weather                      # SQL shell
+docker compose logs -f api                                             # follow the API logs
+```
+
+Ports can be changed in `.env` with `API_PORT` and `POSTGRES_PORT` (PostgreSQL is published on `127.0.0.1` only).
 
 To stop the stack:
 
@@ -163,6 +177,8 @@ To stop the stack:
 docker compose down        # keep the data
 docker compose down -v     # also delete the database volume
 ```
+
+Every release also publishes a ready-made image, `ghcr.io/vdella/weather-ingest-api`. See [ADR-0008](docs/adr/0008-docker-containerization.md) for how the image is built.
 
 ## Running Locally (without Docker)
 
