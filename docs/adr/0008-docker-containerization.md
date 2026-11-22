@@ -1,6 +1,6 @@
 # ADR-0008: Multi-stage Docker image and a Docker Compose stack
 
-- **Status:** Accepted
+- **Status:** Accepted, amended by [ADR-0010](0010-database-port-not-published.md) (database port)
 - **Date:** 2026-11-22
 
 ## Context
