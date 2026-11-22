@@ -15,3 +15,4 @@ Each record explains the context, the decision, the alternatives that were consi
 | [0004](0004-openweather-client.md) | OpenWeather Current Weather API through a dedicated httpx client | Accepted |
 | [0005](0005-postgresql-sqlalchemy-alembic.md) | PostgreSQL with SQLAlchemy 2.0, psycopg 3 and Alembic | Accepted |
 | [0006](0006-weather-readings-schema.md) | One `weather_readings` table with a natural key and idempotent upserts | Accepted |
+| [0007](0007-rest-api-fastapi.md) | REST API with FastAPI, OpenAPI/Swagger and a Postman collection | Accepted |
