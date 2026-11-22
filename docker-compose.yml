@@ -13,9 +13,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-weather}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports:
-      # Published on localhost only, for psql or running the test-suite from the host.
-      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    # No host port by default: the API reaches the database over the Compose network, and a
+    # PostgreSQL already running on the host would otherwise make `up` fail on port 5432.
+    # To reach it from the host (psql, the test-suite), add docker-compose.db-port.yml.
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
       interval: 5s
