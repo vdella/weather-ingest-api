@@ -1,0 +1,7 @@
+# Opt-in: publish PostgreSQL on the host (127.0.0.1 only), e.g. for psql or the test-suite.
+#   docker compose -f docker-compose.yml -f docker-compose.db-port.yml up -d
+# Pick a free port with POSTGRES_PORT in .env if 5432 is already taken.
+services:
+  db:
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
