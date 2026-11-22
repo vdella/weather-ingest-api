@@ -1,6 +1,6 @@
 # ADR-0003: GitHub Actions for CI and release-please for releases
 
-- **Status:** Accepted
+- **Status:** Accepted, amended by [ADR-0009](0009-rebase-only-merges.md) (merge strategy)
 - **Date:** 2026-11-22
 
 ## Context
