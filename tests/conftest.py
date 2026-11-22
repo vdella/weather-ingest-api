@@ -5,7 +5,7 @@ from typing import Any
 
 import pytest
 
-from app.core.config import get_settings
+from app.core.config import get_database_settings, get_settings
 
 
 @pytest.fixture(autouse=True)
@@ -14,8 +14,10 @@ def _isolated_settings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Itera
     monkeypatch.chdir(tmp_path)  # no `.env` in an empty temp dir
     monkeypatch.setenv("OPENWEATHER_API_KEY", "test-api-key")
     get_settings.cache_clear()
+    get_database_settings.cache_clear()
     yield
     get_settings.cache_clear()
+    get_database_settings.cache_clear()
 
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"

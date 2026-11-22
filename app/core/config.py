@@ -8,9 +8,22 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 Units = Literal["standard", "metric", "imperial"]
 
+_ENV = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+
+class DatabaseSettings(BaseSettings):
+    """What the database layer and migrations need (no OpenWeather key required)."""
+
+    model_config = _ENV
+
+    database_url: str = "postgresql+psycopg://weather:weather@localhost:5432/weather"
+    database_echo: bool = False
+
+
+class Settings(DatabaseSettings):
+    """Full application settings."""
+
+    model_config = _ENV
 
     openweather_api_key: SecretStr
     openweather_base_url: HttpUrl = HttpUrl("https://api.openweathermap.org/data/2.5")
@@ -19,11 +32,13 @@ class Settings(BaseSettings):
     default_units: Units = "metric"
     default_lang: str = "pt_br"
 
-    database_url: str = "postgresql+psycopg://weather:weather@localhost:5432/weather"
-    database_echo: bool = False
-
 
 @lru_cache
 def get_settings() -> Settings:
     """Return the process-wide settings (cached, so `.env` is read once)."""
     return Settings()
+
+
+@lru_cache
+def get_database_settings() -> DatabaseSettings:
+    return DatabaseSettings()

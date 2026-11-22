@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from app.core.config import Settings, get_settings
+from app.core.config import DatabaseSettings, Settings, get_settings
 
 
 def test_defaults_are_applied() -> None:
@@ -35,3 +35,9 @@ def test_database_url_can_be_overridden(monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.setenv("DATABASE_URL", "postgresql+psycopg://u:p@db:5432/x")
 
     assert Settings().database_url == "postgresql+psycopg://u:p@db:5432/x"
+
+
+def test_database_settings_do_not_require_the_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("OPENWEATHER_API_KEY")
+
+    assert DatabaseSettings().database_url.startswith("postgresql+psycopg://")
