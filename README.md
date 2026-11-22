@@ -27,7 +27,6 @@
 - [Testing](#testing)
 - [Design Decisions](#design-decisions)
 - [Development Workflow](#development-workflow)
-- [What I Would Do With More Time](#what-i-would-do-with-more-time)
 
 ---
 
@@ -369,10 +368,3 @@ The project is developed through small pull requests against `main`:
 - **Releases**: [release-please](https://github.com/googleapis/release-please) keeps a release PR open on `main`; merging it tags a new version and publishes a GitHub Release with the changelog ([`release.yml`](.github/workflows/release.yml)).
 
 See [ADR-0003](docs/adr/0003-ci-and-release-strategy.md) for the details.
-
-## What I Would Do With More Time
-
-- Scheduled ingestion for a configurable list of cities
-- Retries with exponential backoff for transient OpenWeather failures
-- Structured logging and basic metrics (request latency, ingestion success rate)
-- Authentication on the read API (API key or OAuth2)
