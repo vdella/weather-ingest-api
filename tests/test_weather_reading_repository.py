@@ -1,5 +1,4 @@
-from dataclasses import replace
-from datetime import UTC, datetime, timedelta
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
@@ -9,36 +8,8 @@ from sqlalchemy.orm import Session
 
 from app.core.cities import CityQuery
 from app.models import WeatherReading
-from app.repositories.weather_readings import NewWeatherReading, WeatherReadingRepository
-
-OBSERVED_AT = datetime(2026, 11, 22, 12, 0, tzinfo=UTC)
-
-
-def make_reading(**overrides: object) -> NewWeatherReading:
-    reading = NewWeatherReading(
-        city_id=3463237,
-        city_name="Florianópolis",
-        city_search_name="florianopolis",
-        country_code="BR",
-        latitude=Decimal("-27.5967"),
-        longitude=Decimal("-48.5492"),
-        observed_at=OBSERVED_AT,
-        units="metric",
-        lang="pt_br",
-        temperature=Decimal("24.31"),
-        feels_like=Decimal("24.72"),
-        temp_min=Decimal("23.92"),
-        temp_max=Decimal("25.01"),
-        humidity=74,
-        pressure=1014,
-        wind_speed=Decimal("4.63"),
-        wind_deg=70,
-        cloudiness=75,
-        weather_main="Clouds",
-        weather_description="nublado",
-        raw_payload={"id": 3463237},
-    )
-    return replace(reading, **overrides)
+from app.repositories.weather_readings import WeatherReadingRepository
+from tests.factories import OBSERVED_AT, make_new_reading
 
 
 @pytest.fixture
@@ -47,7 +18,7 @@ def repo(db_session: Session) -> WeatherReadingRepository:
 
 
 def test_upsert_inserts_a_new_reading(repo: WeatherReadingRepository) -> None:
-    stored = repo.upsert(make_reading())
+    stored = repo.upsert(make_new_reading())
 
     assert stored.id is not None
     assert stored.city_name == "Florianópolis"
@@ -58,8 +29,8 @@ def test_upsert_inserts_a_new_reading(repo: WeatherReadingRepository) -> None:
 
 
 def test_upsert_is_idempotent(repo: WeatherReadingRepository, db_session: Session) -> None:
-    first = repo.upsert(make_reading())
-    second = repo.upsert(make_reading(temperature=Decimal("25.00"), weather_description="sol"))
+    first = repo.upsert(make_new_reading())
+    second = repo.upsert(make_new_reading(temperature=Decimal("25.00"), weather_description="sol"))
 
     assert second.id == first.id
     assert second.temperature == Decimal("25.00")
@@ -68,21 +39,23 @@ def test_upsert_is_idempotent(repo: WeatherReadingRepository, db_session: Sessio
 
 
 def test_same_observation_in_other_units_is_a_new_row(repo: WeatherReadingRepository) -> None:
-    metric = repo.upsert(make_reading())
-    imperial = repo.upsert(make_reading(units="imperial", temperature=Decimal("75.76")))
+    metric = repo.upsert(make_new_reading())
+    imperial = repo.upsert(make_new_reading(units="imperial", temperature=Decimal("75.76")))
 
     assert imperial.id != metric.id
 
 
 def test_check_constraints_reject_invalid_values(repo: WeatherReadingRepository) -> None:
     with pytest.raises(IntegrityError):
-        repo.upsert(make_reading(humidity=150))
+        repo.upsert(make_new_reading(humidity=150))
 
 
 def test_list_filters_by_city_and_time_newest_first(repo: WeatherReadingRepository) -> None:
     for hours in range(3):
-        repo.upsert(make_reading(observed_at=OBSERVED_AT + timedelta(hours=hours)))
-    repo.upsert(make_reading(city_id=3448439, city_name="São Paulo", city_search_name="sao paulo"))
+        repo.upsert(make_new_reading(observed_at=OBSERVED_AT + timedelta(hours=hours)))
+    repo.upsert(
+        make_new_reading(city_id=3448439, city_name="São Paulo", city_search_name="sao paulo")
+    )
 
     items, total = repo.list(
         city=CityQuery.parse("florianópolis,BR"),
@@ -99,7 +72,7 @@ def test_list_filters_by_city_and_time_newest_first(repo: WeatherReadingReposito
 
 def test_list_paginates_and_reports_the_total(repo: WeatherReadingRepository) -> None:
     for hours in range(5):
-        repo.upsert(make_reading(observed_at=OBSERVED_AT + timedelta(hours=hours)))
+        repo.upsert(make_new_reading(observed_at=OBSERVED_AT + timedelta(hours=hours)))
 
     items, total = repo.list(limit=2, offset=2)
 
@@ -113,8 +86,8 @@ def test_list_paginates_and_reports_the_total(repo: WeatherReadingRepository) ->
 def test_latest_returns_the_most_recent_reading_for_a_city(
     repo: WeatherReadingRepository,
 ) -> None:
-    repo.upsert(make_reading())
-    newest = repo.upsert(make_reading(observed_at=OBSERVED_AT + timedelta(hours=1)))
+    repo.upsert(make_new_reading())
+    newest = repo.upsert(make_new_reading(observed_at=OBSERVED_AT + timedelta(hours=1)))
 
     assert repo.latest(CityQuery.parse("Florianopolis")) is newest
     assert repo.latest(CityQuery.parse("Florianopolis,US")) is None
