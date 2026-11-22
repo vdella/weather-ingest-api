@@ -1,0 +1,24 @@
+{
+  "coord": {"lon": -48.5492, "lat": -27.5967},
+  "weather": [{"id": 803, "main": "Clouds", "description": "nublado", "icon": "04d"}],
+  "base": "stations",
+  "main": {
+    "temp": 24.31,
+    "feels_like": 24.72,
+    "temp_min": 23.92,
+    "temp_max": 25.01,
+    "pressure": 1014,
+    "humidity": 74,
+    "sea_level": 1014,
+    "grnd_level": 1011
+  },
+  "visibility": 10000,
+  "wind": {"speed": 4.63, "deg": 70},
+  "clouds": {"all": 75},
+  "dt": 1795348800,
+  "sys": {"type": 2, "id": 2017637, "country": "BR", "sunrise": 1795336511, "sunset": 1795385460},
+  "timezone": -10800,
+  "id": 3463237,
+  "name": "Florianópolis",
+  "cod": 200
+}

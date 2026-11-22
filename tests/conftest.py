@@ -1,5 +1,7 @@
+import json
 from collections.abc import Iterator
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -14,3 +16,15 @@ def _isolated_settings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Itera
     get_settings.cache_clear()
     yield
     get_settings.cache_clear()
+
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+
+@pytest.fixture
+def openweather_payload() -> dict[str, Any]:
+    """A realistic OpenWeather *Current Weather* response for Florianópolis."""
+    data: dict[str, Any] = json.loads(
+        (FIXTURES_DIR / "openweather_current_florianopolis.json").read_text(encoding="utf-8")
+    )
+    return data
