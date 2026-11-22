@@ -12,3 +12,4 @@ Each record explains the context, the decision, the alternatives that were consi
 | [0001](0001-record-architecture-decisions.md) | Record architecture decisions | Accepted |
 | [0002](0002-python-and-uv-toolchain.md) | Python 3.12 with uv, ruff, mypy and pytest | Accepted |
 | [0003](0003-ci-and-release-strategy.md) | GitHub Actions for CI and release-please for releases | Accepted |
+| [0004](0004-openweather-client.md) | OpenWeather Current Weather API through a dedicated httpx client | Accepted |
