@@ -43,11 +43,18 @@ Then open Swagger UI at <http://localhost:8000/docs>, or import [the Postman col
 - **The tests**: unit tests run offline with OpenWeather mocked; integration tests run the real Alembic migration against PostgreSQL in CI, which also checks that the migration matches the models.
 - **[Releases](https://github.com/vdella/weather-ingest-api/releases)**: versioned automatically from the commit history, with packages attached and a Docker image on GHCR.
 
+## Resumo em português
+
+Pipeline que consulta o clima atual de uma cidade na API do OpenWeather (requisição `GET` autenticada por chave, com cidade, unidades e idioma como parâmetros dinâmicos), armazena cada observação em uma tabela PostgreSQL bem tipada, com restrições e escrita idempotente, e disponibiliza os dados por uma API REST documentada com Swagger e Postman. Tudo roda com um único `docker compose up`.
+
+Para avaliar: siga os comandos da seção [For reviewers](#for-reviewers) acima. Basta ter Docker e uma chave do OpenWeather. As decisões técnicas estão registradas em [`docs/adr/`](docs/adr/README.md), e o histórico de pull requests mostra a construção do projeto passo a passo.
+
 ---
 
 ## Table of Contents
 
 - [For reviewers](#for-reviewers)
+- [Resumo em português](#resumo-em-português)
 - [Overview](#overview)
 - [Architecture](#architecture)
 - [Tech Stack](#tech-stack)
