@@ -5,7 +5,7 @@
 [![Tests](https://github.com/vdella/weather-ingest-api/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/vdella/weather-ingest-api/actions/workflows/tests.yml)
 [![Release](https://github.com/vdella/weather-ingest-api/actions/workflows/release.yml/badge.svg)](https://github.com/vdella/weather-ingest-api/actions/workflows/release.yml)
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.11x-009688)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.165-009688)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)
 ![Docker](https://img.shields.io/badge/docker-compose-2496ED)
 
@@ -97,6 +97,7 @@ weather-ingest-api/
 │   └── entrypoint.sh     # migrate, then start the API (or run any command)
 ├── Dockerfile
 ├── docker-compose.yml
+├── docker-compose.db-port.yml  # opt-in: publish PostgreSQL on 127.0.0.1
 ├── .env.example
 ├── pyproject.toml
 ├── uv.lock
@@ -135,7 +136,9 @@ Then fill in your values:
 | `POSTGRES_USER` | Database user | `weather` |
 | `POSTGRES_PASSWORD` | Database password | `change-me` |
 | `POSTGRES_DB` | Database name | `weather` |
-| `DATABASE_URL` | SQLAlchemy connection string | `postgresql+psycopg://weather:change-me@db:5432/weather` |
+| `POSTGRES_PORT` | Host port for PostgreSQL, used only with `docker-compose.db-port.yml` | `5432` |
+| `DATABASE_URL` | SQLAlchemy URL for running the API **on the host**; Docker Compose ignores it and uses `db:5432` | `postgresql+psycopg://weather:change-me@localhost:5432/weather` |
+| `API_PORT` | Host port for the REST API | `8000` |
 
 > `.env` is listed in `.gitignore` and must never be committed. Only `.env.example` is versioned.
 
@@ -164,11 +167,17 @@ Useful commands:
 ```bash
 docker compose run --rm api weather-ingest ingest "Florianopolis,BR"   # ingest from the CLI
 docker compose run --rm api migrate                                    # only apply migrations
-docker compose exec db psql -U weather -d weather                      # SQL shell
+docker compose exec db psql -U weather -d weather                      # SQL shell (no host port needed)
 docker compose logs -f api                                             # follow the API logs
 ```
 
-Ports can be changed in `.env` with `API_PORT` and `POSTGRES_PORT` (PostgreSQL is published on `127.0.0.1` only).
+PostgreSQL is **not** published on the host, so the stack starts even if you already run PostgreSQL locally. The API is published on port `8000`; change it with `API_PORT` in `.env` if that port is taken.
+
+To reach the database from the host (a GUI client, `psql`, or the test-suite), add the opt-in file. It publishes PostgreSQL on `127.0.0.1:${POSTGRES_PORT}`:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.db-port.yml up -d
+```
 
 To stop the stack:
 
@@ -237,11 +246,11 @@ Example response (decimals are strings to keep their exact value):
 ```json
 {
   "id": 1,
-  "city_id": 3463237,
+  "city_id": 6323121,
   "city_name": "Florianópolis",
   "country_code": "BR",
-  "latitude": "-27.59670",
-  "longitude": "-48.54920",
+  "latitude": "-27.61460",
+  "longitude": "-48.50120",
   "observed_at": "2026-11-22T12:00:00Z",
   "fetched_at": "2026-11-22T12:05:00Z",
   "units": "metric",
@@ -338,6 +347,14 @@ Tests that need a real database run only when `TEST_DATABASE_URL` points to a Po
 
 ```bash
 TEST_DATABASE_URL=postgresql+psycopg://weather:weather@localhost:5432/weather_test uv run pytest
+```
+
+To use the Docker Compose database instead, publish its port and give the tests their own database, so they never touch the API's data:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.db-port.yml up -d
+docker compose exec db createdb -U weather weather_test
+TEST_DATABASE_URL="postgresql+psycopg://weather:<POSTGRES_PASSWORD>@localhost:<POSTGRES_PORT>/weather_test" uv run pytest
 ```
 
 ## Design Decisions
