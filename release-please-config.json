@@ -7,7 +7,14 @@
   "packages": {
     ".": {
       "package-name": "weather-ingest-api",
-      "changelog-path": "CHANGELOG.md"
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "toml",
+          "path": "uv.lock",
+          "jsonpath": "$.package[?(@.name.value=='weather-ingest-api')].version"
+        }
+      ]
     }
   }
 }
