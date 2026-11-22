@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/vdella/weather-ingest-api/compare/v0.1.1...v0.1.2) (2026-11-22)
+
+
+### Documentation
+
+* **adr:** stop pointing at the removed future-work list ([cd00693](https://github.com/vdella/weather-ingest-api/commit/cd0069338290be926abca7924610ada0a3abeac0))
+* remove the "What I Would Do With More Time" section from the README ([dc30c66](https://github.com/vdella/weather-ingest-api/commit/dc30c66b9bbc2092d941bcfa25b13b9c44cd4ddd))
+
 ## [0.1.1](https://github.com/vdella/weather-ingest-api/compare/v0.1.0...v0.1.1) (2026-11-22)
 
 
