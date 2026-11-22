@@ -29,3 +29,9 @@ def test_rejects_unknown_units(monkeypatch: pytest.MonkeyPatch) -> None:
 
     with pytest.raises(ValidationError):
         Settings()
+
+
+def test_database_url_can_be_overridden(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("DATABASE_URL", "postgresql+psycopg://u:p@db:5432/x")
+
+    assert Settings().database_url == "postgresql+psycopg://u:p@db:5432/x"

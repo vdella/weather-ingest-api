@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     default_units: Units = "metric"
     default_lang: str = "pt_br"
 
+    database_url: str = "postgresql+psycopg://weather:weather@localhost:5432/weather"
+    database_echo: bool = False
+
 
 @lru_cache
 def get_settings() -> Settings:
